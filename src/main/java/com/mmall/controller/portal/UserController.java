@@ -94,6 +94,11 @@ public class UserController {
             return ServerResponse.createByErroMessage("当前用户未登陆");
         }
         user.setId(currentUser.getId());
-        return null;
+        user.setUsername(currentUser.getUsername());
+        ServerResponse<User> response = userService.updateInformation(user);
+        if(response.isSuccess()){
+            session.setAttribute(Const.CURRENT_USER,response.getData());
+        }
+        return response;
     }
 }

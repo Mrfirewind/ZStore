@@ -138,9 +138,22 @@ public class UserServiceImp implements IUserService {
         return ServerResponse.createByErroMessage("密码更新失败");
     }
 
+    @Override
     public ServerResponse<User> updateInformation(User user){
          int checkEmailResult = userMapper.checkEmailByUserId(user.getEmail(),user.getId());
-
-        return null;
+         if(checkEmailResult>0){
+             return ServerResponse.createBySuccessMessage("email已存在");
+         }
+         User updateUser = new User();
+         updateUser.setId(user.getId());
+         updateUser.setAnswer(user.getAnswer());
+         updateUser.setQuestion(user.getQuestion());
+         updateUser.setEmail(user.getEmail());
+         updateUser.setPhone(user.getPhone());
+        int updateResult = userMapper.updateByPrimaryKeySelective(updateUser);
+        if(updateResult>0){
+            return ServerResponse.createBySuccess("更新个人资料成功",updateUser);
+        }
+        return ServerResponse.createBySuccessMessage("更新个人信息失败");
     }
 }
