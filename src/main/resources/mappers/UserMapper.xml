@@ -168,12 +168,12 @@
         select count(1) FROM mmall_user WHERE email = #{email}
     </select>
 
-    <select id="selectQuestion" resultType="string" parameterType="string">
+    <select id="selectQuestionByUsername" resultType="string" parameterType="string">
         select question FROM mmall_user WHERE username = #{username}
     </select>
 
     <select id="checkAnswer" resultType="int" parameterType="map">
-        select count(1) FROM mmall_user WHERE username = #{username} AND password = #{question} AND answer = #{answer}
+        select count(1) FROM mmall_user WHERE username = #{username} AND question = #{question} AND answer = #{answer}
     </select>
 
     <update id="updatePasswordByUsername"  parameterType="map">
@@ -181,7 +181,7 @@
     </update>
 
     <select id="checkPassword" resultType="int" parameterType="map">
-        select count(1) FROM mmall_user WHERE username = #{username} AND password = #{question}
+        select count(1) FROM mmall_user WHERE username = #{username} AND password = #{password}
     </select>
 
     <select id="checkEmailByUserId" resultType="int" parameterType="map">

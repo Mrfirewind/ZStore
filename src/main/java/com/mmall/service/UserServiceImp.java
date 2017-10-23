@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service("userServiceImp")
-public class UserServiceImp implements IUserService {
+ public class UserServiceImp implements IUserService {
     @Autowired
     private UserMapper userMapper;
 
@@ -55,26 +55,26 @@ public class UserServiceImp implements IUserService {
         if (StringUtils.isBlank(type)) {
             return ServerResponse.createByErroMessage("参数错误");
         }
-        if (Const.USERNAME.equals(account)) {
+        if (Const.USERNAME.equals(type)) {
             int result = userMapper.checkUserName(account);
             if (result > 0) {
                 return ServerResponse.createByErroMessage("用户名已存在");
             }
         }
-        if (Const.EMAIL.equals(account)) {
+        if (Const.EMAIL.equals(type)) {
             int result = userMapper.checkEmail(account);
             if (result > 0) {
                 return ServerResponse.createByErroMessage("邮箱已存在");
             }
         }
 
-        return ServerResponse.createBySuccessMessage("注册成功");
+        return ServerResponse.createBySuccessMessage("效验成功");
     }
 
     @Override
     public ServerResponse<String> selectQuestion(String userName) {
-        ServerResponse result = this.checkValid(userName, Const.USERNAME);
-        if (!result.isSuccess()) {
+        int result = userMapper.checkUserName(userName);
+        if (result < 1) {
             return ServerResponse.createByErroMessage("用户不存在");
         }
 
@@ -102,8 +102,8 @@ public class UserServiceImp implements IUserService {
         if (StringUtils.isBlank(forgetToken)) {
             return ServerResponse.createByErroMessage("参数错误，token需传递");
         }
-        ServerResponse checkResult = this.checkValid(userName, Const.USERNAME);
-        if (!checkResult.isSuccess()) {
+        int result = userMapper.checkUserName(userName);
+        if (result < 1) {
             return ServerResponse.createByErroMessage("用户不存在");
         }
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX + userName);
@@ -155,5 +155,15 @@ public class UserServiceImp implements IUserService {
             return ServerResponse.createBySuccess("更新个人资料成功",updateUser);
         }
         return ServerResponse.createBySuccessMessage("更新个人信息失败");
+    }
+
+    @Override
+    public ServerResponse<User> getInformation(Integer userId){
+        User user = userMapper.selectByPrimaryKey(userId);
+        if(user == null){
+            return  ServerResponse.createByErroMessage("找不到当前用户");
+        }
+        user.setPassword(StringUtils.EMPTY);
+        return ServerResponse.createBySuccess(user);
     }
 }
