@@ -22,4 +22,6 @@ public interface IUserService {
 
     ServerResponse<User> getInformation(Integer userId);
 
+    ServerResponse checkAdmin(User user);
+
 }

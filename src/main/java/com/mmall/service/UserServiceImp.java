@@ -166,4 +166,16 @@ import java.util.UUID;
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess(user);
     }
+
+    /**
+     * 判断是否是管理员
+     * @param user
+     * @return
+     */
+    public ServerResponse checkAdmin(User user){
+      if(user!= null&&user.getRole().equals(Const.Role.ROLE_ADMIN)){
+          return ServerResponse.createBySuccess();
+      }
+        return ServerResponse.createByError();
+    }
 }
