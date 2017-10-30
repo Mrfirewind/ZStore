@@ -12,16 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletResponse;
 import java.util.List;
 import java.util.Set;
 
 @Service("categoryService")
-public class CategoryService implements ICategoryService {
+public class CategoryServiceImp implements ICategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
 
-    private static final Logger log = LoggerFactory.getLogger(CategoryService.class);
+    private static final Logger log = LoggerFactory.getLogger(CategoryServiceImp.class);
 
     /**
      * 添加商品品类
@@ -76,7 +75,7 @@ public class CategoryService implements ICategoryService {
      * @return
      */
     @Override
-    public ServerResponse selectChildrenCategoryById(Integer categoryId) {
+    public ServerResponse<List<Integer>> selectChildrenCategoryById(Integer categoryId) {
         Set<Category> categorySet = Sets.newHashSet();
         findChildrenCategory(categorySet, categoryId);
         List<Integer> categoryIdList = Lists.newArrayList();
