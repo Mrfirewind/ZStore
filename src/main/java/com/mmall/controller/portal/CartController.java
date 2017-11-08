@@ -35,7 +35,8 @@ public class CartController {
     @RequestMapping(value = "add.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> add(HttpSession session, Integer count, Integer productId, HttpServletRequest request) {
-        String nn =(String) request.getAttribute("count"); ;
+        String nn = (String) request.getAttribute("count");
+        ;
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) {
             return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
@@ -43,7 +44,7 @@ public class CartController {
         return cartService.add(user.getId(), productId, count);
     }
 
-    @RequestMapping(value = "update.do", method = RequestMethod.PUT)
+    @RequestMapping(value = "update.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> update(HttpSession session, Integer count, Integer productId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -53,7 +54,7 @@ public class CartController {
         return cartService.update(user.getId(), productId, count);
     }
 
-    @RequestMapping(value = "delete.do", method = RequestMethod.DELETE)
+    @RequestMapping(value = "delete.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> deleteProduct(HttpSession session, Integer count, String productIds) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -63,7 +64,7 @@ public class CartController {
         return cartService.delete(user.getId(), productIds);
     }
 
-    @RequestMapping(value = "select_all.do", method = RequestMethod.PUT)
+    @RequestMapping(value = "select_all.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> selectAll(HttpSession session) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -73,7 +74,7 @@ public class CartController {
         return cartService.checkedOrUnchecked(user.getId(), Const.CART.CHECKED, null);
     }
 
-    @RequestMapping(value = "un_select_all.do", method = RequestMethod.PUT)
+    @RequestMapping(value = "un_select_all.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> unSelectAll(HttpSession session) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -83,7 +84,7 @@ public class CartController {
         return cartService.checkedOrUnchecked(user.getId(), Const.CART.UN_CHECKED, null);
     }
 
-    @RequestMapping(value = "select.do", method = RequestMethod.PUT)
+    @RequestMapping(value = "select.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> select(HttpSession session, Integer productId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -93,7 +94,7 @@ public class CartController {
         return cartService.checkedOrUnchecked(user.getId(), Const.CART.CHECKED, productId);
     }
 
-    @RequestMapping(value = "un_select.do", method = RequestMethod.PUT)
+    @RequestMapping(value = "un_select.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> unSelect(HttpSession session, Integer productId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
