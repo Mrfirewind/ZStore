@@ -209,4 +209,14 @@
         <include refid="Base_Column_List"/>
         FROM mmall_order WHERE order_no = #{orderNo}
     </select>
+    <select id="selectByUserId" parameterType="int" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM mmall_order WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+    <select id="selectAllOrder" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM mmall_order ORDER BY create_time DESC
+    </select>
 </mapper>

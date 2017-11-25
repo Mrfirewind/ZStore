@@ -3,6 +3,7 @@ package com.mmall.controller.portal;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.demo.trade.config.Configs;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.mmall.commom.Const;
 import com.mmall.commom.ResponseCode;
@@ -13,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -27,6 +26,63 @@ public class OrderController {
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
     @Autowired
     private IOrderService orderService;
+
+    @RequestMapping(value = "create.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse create(HttpSession session, Integer shippingId,HttpServletRequest request) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return orderService.createOrder(user.getId(), shippingId);
+    }
+
+    @RequestMapping(value = "cancel.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse cancel(HttpSession session, Long orderNo) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return orderService.cancelOrder(user.getId(), orderNo);
+    }
+
+    @RequestMapping(value = "get_order_cart_product.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse getOrderCartProduct(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return orderService.getOrderCartProduct(user.getId());
+    }
+
+    @RequestMapping(value = "detail.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse detail(HttpSession session,Long orderNo) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return orderService.getOrderDetail(user.getId(),orderNo);
+    }
+
+    @RequestMapping(value = "list.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<PageInfo> list(HttpSession session, @RequestParam(value = "pageNum",defaultValue = "1") int pageNum,
+                                         @RequestParam(value = "pageSize",defaultValue = "10") int pageSize) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByCodeErroMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+        }
+
+        return orderService.getOrderList(user.getId(),pageNum,pageSize);
+    }
+
 
     @RequestMapping(value = "pay.do", method = RequestMethod.POST)
     @ResponseBody
