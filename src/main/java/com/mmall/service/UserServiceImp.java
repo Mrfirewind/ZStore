@@ -2,10 +2,10 @@ package com.mmall.service;
 
 import com.mmall.commom.Const;
 import com.mmall.commom.ServerResponse;
-import com.mmall.commom.TokenCache;
 import com.mmall.dao.UserMapper;
 import com.mmall.pojo.User;
 import com.mmall.utils.MD5Util;
+import com.mmall.utils.RedisPoolUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service("userServiceImp")
- public class UserServiceImp implements IUserService {
+public class UserServiceImp implements IUserService {
     @Autowired
     private UserMapper userMapper;
 
@@ -90,7 +90,7 @@ import java.util.UUID;
         int result = userMapper.checkAnswer(username, question, answer);
         if (result > 0) {
             String forgetToken = UUID.randomUUID().toString();
-            TokenCache.setKey(TokenCache.TOKEN_PREFIX + username, forgetToken);
+            RedisPoolUtil.setEx(Const.TOKEN_PREFIX + username, forgetToken, 60 * 60);
             return ServerResponse.createBySuccess(forgetToken);
         }
 
@@ -106,7 +106,7 @@ import java.util.UUID;
         if (result < 1) {
             return ServerResponse.createByErroMessage("用户不存在");
         }
-        String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX + userName);
+        String token = RedisPoolUtil.get(Const.TOKEN_PREFIX + userName);
         if (StringUtils.isBlank(token)) {
             return ServerResponse.createByErroMessage("Token无效或过期");
         }
@@ -139,29 +139,29 @@ import java.util.UUID;
     }
 
     @Override
-    public ServerResponse<User> updateInformation(User user){
-         int checkEmailResult = userMapper.checkEmailByUserId(user.getEmail(),user.getId());
-         if(checkEmailResult>0){
-             return ServerResponse.createBySuccessMessage("email已存在");
-         }
-         User updateUser = new User();
-         updateUser.setId(user.getId());
-         updateUser.setAnswer(user.getAnswer());
-         updateUser.setQuestion(user.getQuestion());
-         updateUser.setEmail(user.getEmail());
-         updateUser.setPhone(user.getPhone());
+    public ServerResponse<User> updateInformation(User user) {
+        int checkEmailResult = userMapper.checkEmailByUserId(user.getEmail(), user.getId());
+        if (checkEmailResult > 0) {
+            return ServerResponse.createBySuccessMessage("email已存在");
+        }
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setAnswer(user.getAnswer());
+        updateUser.setQuestion(user.getQuestion());
+        updateUser.setEmail(user.getEmail());
+        updateUser.setPhone(user.getPhone());
         int updateResult = userMapper.updateByPrimaryKeySelective(updateUser);
-        if(updateResult>0){
-            return ServerResponse.createBySuccess("更新个人资料成功",updateUser);
+        if (updateResult > 0) {
+            return ServerResponse.createBySuccess("更新个人资料成功", updateUser);
         }
         return ServerResponse.createBySuccessMessage("更新个人信息失败");
     }
 
     @Override
-    public ServerResponse<User> getInformation(Integer userId){
+    public ServerResponse<User> getInformation(Integer userId) {
         User user = userMapper.selectByPrimaryKey(userId);
-        if(user == null){
-            return  ServerResponse.createByErroMessage("找不到当前用户");
+        if (user == null) {
+            return ServerResponse.createByErroMessage("找不到当前用户");
         }
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess(user);
@@ -169,13 +169,14 @@ import java.util.UUID;
 
     /**
      * 判断是否是管理员
+     *
      * @param user
      * @return
      */
-    public ServerResponse checkAdmin(User user){
-      if(user!= null&&user.getRole().equals(Const.Role.ROLE_ADMIN)){
-          return ServerResponse.createBySuccess();
-      }
+    public ServerResponse checkAdmin(User user) {
+        if (user != null && user.getRole().equals(Const.Role.ROLE_ADMIN)) {
+            return ServerResponse.createBySuccess();
+        }
         return ServerResponse.createByError();
     }
 }

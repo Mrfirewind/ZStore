@@ -133,4 +133,9 @@ public class Const {
             return code;
         }
     }
+    public interface RedisCacheExtime{
+        int REDIS_SESSION_EXTIME = 60 * 30;//30分钟
+    }
+
+    public static final String TOKEN_PREFIX = "token_";
 }
