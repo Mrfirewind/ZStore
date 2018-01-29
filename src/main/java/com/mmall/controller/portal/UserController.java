@@ -27,8 +27,8 @@ public class UserController {
 
     @RequestMapping(value = "/login.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(String userName, String password, HttpSession session, HttpServletResponse response) {
-        ServerResponse<User> serverResponse = userService.login(userName, password);
+    public ServerResponse<User> login(String username, String password, HttpSession session, HttpServletResponse response) {
+        ServerResponse<User> serverResponse = userService.login(username, password);
         if (serverResponse.isSuccess()) {
             CookieUtil.writeLoginToken(response, session.getId());
             RedisPoolUtil.setEx(session.getId(), JsonUtil.obj2String(serverResponse.getData()), Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
